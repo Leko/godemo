@@ -3,9 +3,9 @@ package session
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
-	"net/http"
 	"godemo/database"
 	"godemo/model"
+	"net/http"
 )
 
 const keySession = "sessions"
@@ -24,8 +24,13 @@ func GetCurrentUser(req *http.Request) model.User {
 	var user model.User
 
 	id := GetSession(req).Values["userId"]
-	db := database.GetDB()
-	db.First(&user, id)
+
+	if id != nil {
+		db := database.GetDB()
+		db.First(&user, id)
+	} else {
+		user = model.User{}
+	}
 
 	return user
 }
