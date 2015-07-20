@@ -37,6 +37,11 @@
 			"Rev": "443e926da0d793d3b3f32118b1e4ba52ada26503"
 		},
 		{
+			"ImportPath": "github.com/justinas/nosurf",
+			"Comment": "0.1-50-g45adcfc",
+			"Rev": "45adcfcaf70610a5934db447ffe0ea9d13462c9e"
+		},
+		{
 			"ImportPath": "github.com/lib/pq",
 			"Comment": "go1.0-cutoff-56-gdc50b6a",
 			"Rev": "dc50b6ad2d3ee836442cf3389009c7cd1e64bb43"
