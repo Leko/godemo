@@ -55,6 +55,10 @@
 			"Rev": "40e4aedc8fabf8c23e040057540867186712faa5"
 		},
 		{
+			"ImportPath": "github.com/soveran/redisurl",
+			"Rev": "ac42ec99510b5f21d11560d316adcc5bc41f0915"
+		},
+		{
 			"ImportPath": "golang.org/x/crypto/bcrypt",
 			"Rev": "7d5b0be716b9d6d4269afdaae10032bb296d3cdf"
 		},
