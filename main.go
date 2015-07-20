@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/justinas/nosurf"
 	"godemo/controller"
 	"godemo/database"
 	"godemo/model"
@@ -30,7 +31,7 @@ func main() {
 	router.POST("/authenticate", controller.Users.Authenticate)
 	router.POST("/users/create", controller.Users.Create)
 
-	router.Run(":" + port())
+	http.ListenAndServe(":"+port(), nosurf.New(router))
 }
 
 func port() string {

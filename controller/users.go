@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/justinas/nosurf"
 	"godemo/database"
 	"godemo/model"
 	"godemo/session"
@@ -21,12 +22,17 @@ func (u *users) Top(c *gin.Context) {
 }
 
 func (u *users) Login(c *gin.Context) {
-	c.HTML(http.StatusOK, "user_form.tpl", gin.H{})
+	csrfToken := nosurf.Token(c.Request)
+	c.HTML(http.StatusOK, "user_form.tpl", gin.H{
+		"csrfToken": csrfToken,
+	})
 }
 
 func (u *users) Register(c *gin.Context) {
+	csrfToken := nosurf.Token(c.Request)
 	c.HTML(http.StatusOK, "user_form.tpl", gin.H{
-		"new": true,
+		"new":       true,
+		"csrfToken": csrfToken,
 	})
 }
 

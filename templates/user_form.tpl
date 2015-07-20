@@ -9,6 +9,7 @@
     <h1>Login to demoapp</h1>
     <form action="/authenticate" method="POST">
     {{end}}
+      <input type="hidden" name="csrf_token" value="{{ .csrfToken }}">
       <div class="form-group">
         <label for="form-email" class="form-label">Email</label>
         <input type="email" id="form-email" class="form-control" name="email">
