@@ -1,0 +1,20 @@
+
+# Go sample application
+
+## Usage
+Install [Vagrant](https://www.vagrantup.com/downloads.html), [Ansible](http://docs.ansible.com/intro_installation.html) and [Bower](http://bower.io/#install-bower)
+
+```
+$ git clone git@github.com:Leko/godemo.git
+$ cd godemo
+$ bower install
+$ vagrant up --provision
+$ vagrant ssh
+
+$ vagrant@precise64:~$ cd go/src/godemo
+$ vagrant@precise64:~/go/src/godemo$ go get
+$ vagrant@precise64:~/go/src/godemo$ go get github.com/codegangsta/gin
+$ vagrant@precise64:~/go/src/godemo$ gin -p 8080
+```
+
+Then open `http://localhost:3000`
