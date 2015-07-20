@@ -62,3 +62,8 @@ func (u *users) Authenticate(c *gin.Context) {
 
 	c.Redirect(http.StatusMovedPermanently, "/")
 }
+
+func (u *users) Logout(c *gin.Context) {
+	session.Destroy(c.Request, c.Writer)
+	c.Redirect(http.StatusMovedPermanently, "/")
+}

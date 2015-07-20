@@ -25,6 +25,7 @@ func main() {
 
 	router.GET("/", controller.Users.Top)
 	router.GET("/login", controller.Users.Login)
+	router.GET("/logout", controller.Users.Logout)
 	router.GET("/register", controller.Users.Register)
 	router.POST("/authenticate", controller.Users.Authenticate)
 	router.POST("/users/create", controller.Users.Create)
