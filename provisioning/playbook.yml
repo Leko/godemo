@@ -29,7 +29,7 @@
       - { name: postgresql }
     sudo: yes
   - name: update postgres config for development
-    shell: sed -i -e 's/peer/trust/' /etc/postgresql/9.1/main/pg_hba.conf; service postgresql restart
+    shell: sed -i -e 's/peer\|md5/trust/' /etc/postgresql/9.1/main/pg_hba.conf; service postgresql restart
     sudo: yes
   - name: check synced folder owner is vagrant
     stat: path={{ gopath }}
