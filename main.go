@@ -11,6 +11,13 @@ const defaultPort = "8080"
 func main() {
 	router := gin.Default()
 
+	router.Static("/css", "./assets/dist/css")
+	router.LoadHTMLGlob("templates/*")
+
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tpl", gin.H{})
+	})
+
 	router.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
 	})
