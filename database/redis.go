@@ -1,9 +1,9 @@
 package database
 
 import (
+	"github.com/garyburd/redigo/redis"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/soveran/redisurl"
-	"github.com/garyburd/redigo/redis"
 	. "gopkg.in/boj/redistore.v1"
 	"os"
 	"strconv"
@@ -28,12 +28,12 @@ func GetKVS() *RediStore {
 func getConnection() *RediStore {
 	max := maxConnection()
 	url := address()
-	poor := redis.NewPool(func() (redis.Conn, error) {
+	pool := redis.NewPool(func() (redis.Conn, error) {
 		return redisurl.ConnectToURL(url)
 	}, max)
 
 	// FIXME: Connection leek
-	connection, err := NewRediStoreWithPool(poor, []byte("secret-key"))
+	connection, err := NewRediStoreWithPool(pool, []byte("secret-key"))
 	if err != nil {
 		panic(err)
 	}
