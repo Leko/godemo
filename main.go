@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"godemo/controller"
+	"godemo/database"
+	"godemo/model"
 	"net/http"
 	"os"
 )
@@ -10,6 +12,8 @@ import (
 const defaultPort = "8080"
 
 func main() {
+	migrate()
+
 	router := gin.Default()
 
 	router.Static("/css", "./assets/dist/css")
@@ -25,6 +29,7 @@ func main() {
 
 	router.GET("/login", controller.Users.Login)
 	router.GET("/register", controller.Users.Register)
+	router.POST("/users/create", controller.Users.Create)
 
 	router.Run(":" + port())
 }
@@ -36,4 +41,10 @@ func port() string {
 	}
 
 	return port
+}
+
+func migrate() {
+	db := database.GetDB()
+
+	db.AutoMigrate(&model.User{})
 }
