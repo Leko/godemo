@@ -1,0 +1,64 @@
+# Goコードの書き方 - The Go Programming Language
+# http://golang-jp.org/doc/code.html
+# 
+# これからGoを始める人のためのTips集
+# http://blog.wacul.co.jp/blog/2014/08/22/go/
+# 
+# Vagrant+AnsibleでGo環境を構築し、せっかくなのでAWS SDK for Goを試してみる。
+# http://qiita.com/itayan/items/b41f8541892e693aeb0a
+---
+- hosts: default
+  sudo: false
+  vars:
+    goroot: "/usr/local"
+    gopath: "/home/vagrant/go"
+    apppath: "{{ gopath }}/src/godemo"
+  environment:
+    HOME: /home/vagrant
+    GOPATH: "{{ gopath }}"
+    PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin:{{ gopath }}/bin
+  tasks:
+  - name: update apt-get
+    shell: apt-get update
+    sudo: yes
+  - name: install dependence packages
+    apt: name={{ item.name }} state=installed
+    with_items:
+      - { name: git }
+      - { name: redis-server }
+      - { name: postgresql }
+    sudo: yes
+  - name: update postgres config for development
+    shell: sed -i -e 's/peer/trust/' /etc/postgresql/9.1/main/pg_hba.conf; service postgresql restart
+    sudo: yes
+  - name: check synced folder owner is vagrant
+    stat: path={{ gopath }}
+    register: synced_folder
+  - name: override synced folder owner to Vagrant
+    shell: chown vagrant:vagrant -R {{ gopath }}
+    sudo: yes
+    when: synced_folder.stat.pw_name != 'vagrant'
+  - name: check Go exists
+    shell: ls {{ goroot }}/go
+    register: go_exists
+    ignore_errors: yes
+  - name: get a go
+    shell: wget https://storage.googleapis.com/golang/go1.4.1.linux-amd64.tar.gz
+    when: go_exists|failed
+  - name: extract files from an archive
+    shell: sudo tar -C {{ goroot }} -xzf go1.4.1.linux-amd64.tar.gz
+    when: go_exists|failed
+  - name: check GOPATH exists
+    shell: grep 'GOPATH' $HOME/.bash_profile
+    register: gopath_exists
+    ignore_errors: yes
+  - name: set GOPATH
+    shell: echo "export GOPATH={{ gopath }}" >> $HOME/.bash_profile; . $HOME/.bash_profile
+    when: gopath_exists|failed
+  - name: set PATH to Go bin
+    shell: echo 'export PATH=$PATH:{{ goroot }}/go/bin:$GOPATH/bin' >> $HOME/.bash_profile; . $HOME/.bash_profile
+    when: gopath_exists|failed
+  - name: get godep
+    shell: go get github.com/kr/godep
+  - name: save go dependencies
+    shell: cd {{ apppath }}; godep save
