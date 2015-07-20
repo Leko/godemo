@@ -1,6 +1,8 @@
 
 # Go sample application
 
+See [Goに入門してRedis+PostgresなアプリをHerokuにデプロイするまで](http://leko.jp/archives/763)
+
 ## Usage
 Install [Vagrant](https://www.vagrantup.com/downloads.html), [Ansible](http://docs.ansible.com/intro_installation.html) and [Bower](http://bower.io/#install-bower)
 
