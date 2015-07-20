@@ -19,16 +19,14 @@ func main() {
 	router.Static("/css", "./assets/dist/css")
 	router.LoadHTMLGlob("templates/*")
 
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tpl", gin.H{})
-	})
-
 	router.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
 	})
 
+	router.GET("/", controller.Users.Top)
 	router.GET("/login", controller.Users.Login)
 	router.GET("/register", controller.Users.Register)
+	router.POST("/authenticate", controller.Users.Authenticate)
 	router.POST("/users/create", controller.Users.Create)
 
 	router.Run(":" + port())
