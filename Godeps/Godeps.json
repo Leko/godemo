@@ -8,6 +8,11 @@
 			"Rev": "fd5d4294a5d5223d55fc76d7840f4b0ad91647bb"
 		},
 		{
+			"ImportPath": "github.com/joho/godotenv",
+			"Comment": "v1-8-g443e926",
+			"Rev": "443e926da0d793d3b3f32118b1e4ba52ada26503"
+		},
+		{
 			"ImportPath": "github.com/manucorporat/sse",
 			"Rev": "fe6ea2c8e398672518ef204bf0fbd9af858d0e15"
 		},
