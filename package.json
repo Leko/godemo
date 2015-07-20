@@ -16,5 +16,9 @@
     "url": "https://github.com/Leko/godemo/issues"
   },
   "homepage": "https://github.com/Leko/godemo",
-  "devDependencies": {}
+  "devDependencies": {
+    "coffee-script": "^1.9.3",
+    "gulp": "^3.9.0",
+    "gulp-sass": "^2.0.4"
+  }
 }
