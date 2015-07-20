@@ -18,6 +18,16 @@ func main() {
 		c.HTML(http.StatusOK, "index.tpl", gin.H{})
 	})
 
+	router.GET("/login", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "user_form.tpl", gin.H{})
+	})
+
+	router.GET("/register", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "user_form.tpl", gin.H{
+			"new": true,
+		})
+	})
+
 	router.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
 	})
