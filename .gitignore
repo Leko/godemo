@@ -1,2 +1,3 @@
 .vagrant/
 gin-bin
+node_modules/

@@ -1,0 +1,20 @@
+{
+  "name": "godemo",
+  "version": "0.0.0",
+  "description": "See [Goに入門してRedis+PostgresなアプリをHerokuにデプロイするまで](TODO URL)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Leko/godemo.git"
+  },
+  "author": "Leko <leko.noor@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Leko/godemo/issues"
+  },
+  "homepage": "https://github.com/Leko/godemo",
+  "devDependencies": {}
+}
