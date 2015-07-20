@@ -2,6 +2,8 @@ package database
 
 import (
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/soveran/redisurl"
+	"github.com/garyburd/redigo/redis"
 	. "gopkg.in/boj/redistore.v1"
 	"os"
 	"strconv"
@@ -11,23 +13,27 @@ const defaultRedisMaxConnection = 30
 const defaultRedisMaxAge = 30 * 24 * 3600
 const defaultRedisUrl = ":6379"
 
-var redis *RediStore
+var conn *RediStore
 var redisConnected bool
 
 func GetKVS() *RediStore {
 	if !redisConnected {
-		redis = getConnection()
+		conn = getConnection()
 		redisConnected = true
 	}
 
-	return redis
+	return conn
 }
 
 func getConnection() *RediStore {
 	max := maxConnection()
 	url := address()
+	poor := redis.NewPool(func() (redis.Conn, error) {
+		return redisurl.ConnectToURL(url)
+	}, max)
+
 	// FIXME: Connection leek
-	connection, err := NewRediStore(max, "tcp", url, "", []byte("secret-key"))
+	connection, err := NewRediStoreWithPool(poor, []byte("secret-key"))
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +44,7 @@ func getConnection() *RediStore {
 }
 
 func maxConnection() int {
-	env := os.Getenv("REDISCLOUD_MAX_CONNECTION")
+	env := os.Getenv("REDIS_MAX_CONNECTION")
 	if env == "" {
 		return defaultRedisMaxConnection
 	}
@@ -48,7 +54,7 @@ func maxConnection() int {
 }
 
 func maxAge() int {
-	env := os.Getenv("REDISCLOUD_MAX_AGE")
+	env := os.Getenv("REDIS_MAX_AGE")
 	if env == "" {
 		return defaultRedisMaxAge
 	}
