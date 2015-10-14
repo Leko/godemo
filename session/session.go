@@ -1,17 +1,35 @@
 package session
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
+	. "gopkg.in/boj/redistore.v1"
+	"net/http"
+	"os"
 	"godemo/database"
 	"godemo/model"
-	"net/http"
+	"strconv"
 )
 
 const keySession = "sessions"
+const defaultSessionMaxAge = 30 * 24 * 3600
+
+var (
+	store *RediStore
+)
+
+func init() {
+	var err error
+	max := maxAge()
+
+	store, err = NewRediStoreWithPool(database.GetRedisPool(), []byte("secret-key"))
+	if err != nil {
+		panic(err)
+	}
+
+	store.SetMaxAge(max)
+}
 
 func GetSession(req *http.Request) *sessions.Session {
-	store := database.GetKVS()
 	session, err := store.Get(req, keySession)
 	if err != nil {
 		panic(err)
@@ -23,7 +41,7 @@ func GetSession(req *http.Request) *sessions.Session {
 func GetCurrentUser(req *http.Request) model.User {
 	var user model.User
 
-	id := GetSession(req).Values["userId"]
+	id := GetSession(req).Values["user_id"]
 
 	if id != nil {
 		db := database.GetDB()
@@ -47,14 +65,12 @@ func Destroy(req *http.Request, res http.ResponseWriter) {
 	Save(req, res)
 }
 
-func AuthRequired() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		s := GetSession(c.Request)
-
-		if s.Values["userId"] == nil {
-			c.Redirect(http.StatusMovedPermanently, "/login")
-		} else {
-			c.Next()
-		}
+func maxAge() int {
+	env := os.Getenv("SESSION_MAX_AGE")
+	if env == "" {
+		return defaultSessionMaxAge
 	}
+
+	max, _ := strconv.Atoi(env)
+	return max
 }
