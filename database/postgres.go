@@ -10,19 +10,19 @@ import (
 
 const defaultMaxConnections = 20
 
-var connection gorm.DB
-var called bool // FIXME: dirty
+var (
+	connection *gorm.DB
+)
 
-func GetDB() gorm.DB {
-	if !called {
-		connection = connect()
-		called = true
-	}
+func init() {
+	connection = connect()
+}
 
+func GetDB() *gorm.DB {
 	return connection
 }
 
-func connect() gorm.DB {
+func connect() *gorm.DB {
 	url := getDatabaseUrl()
 	max := getMaxConnection()
 
@@ -34,7 +34,7 @@ func connect() gorm.DB {
 	conn.DB().SetMaxIdleConns(max / 5)
 	conn.DB().SetMaxOpenConns(max)
 
-	return conn
+	return &conn
 }
 
 func getDatabaseUrl() string {
