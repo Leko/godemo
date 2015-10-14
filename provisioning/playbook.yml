@@ -61,4 +61,4 @@
   - name: get godep
     shell: go get github.com/kr/godep
   - name: save go dependencies
-    shell: cd {{ apppath }}; godep save
+    shell: cd {{ apppath }} && go get && godep save
