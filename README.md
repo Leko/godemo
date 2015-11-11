@@ -20,3 +20,17 @@ $ vagrant@precise64:~/go/src/godemo$ gin -p 8080
 ```
 
 Then open `http://localhost:3000`
+
+## Deploy
+
+```sh
+$ rm -rf .git
+$ git init
+$ git add .
+$ git commit -m "initial commit"
+$ heroku apps:create --addons heroku-postgresql:hobby-dev,rediscloud:30 --buildpack heroku/go
+$ git push heroku master
+
+$ # Wait a minutes
+$ heroku open
+```
