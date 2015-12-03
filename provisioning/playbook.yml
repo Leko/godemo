@@ -52,15 +52,16 @@
     register: go_exists
   - name: check Go version
     shell: go version | awk '{ print $3 }'
-    register: go_version_matched
+    register: go_version
     ignore_errors: yes
+    changed_when: "go_version.stdout.find('go{{ goversion }}')"
     when: go_exists.stat.exists
   - name: get a go
     shell: wget https://storage.googleapis.com/golang/go{{ goversion }}.linux-amd64.tar.gz
-    when: not go_exists.stat.exists or go_version_matched.stdout.find('go{{ goversion }}')
+    when: not go_exists.stat.exists or go_version|changed
   - name: extract files from an archive
     shell: sudo tar -C {{ goroot }} -xzf go{{ goversion }}.linux-amd64.tar.gz
-    when: not go_exists.stat.exists or go_version_matched.stdout.find('go{{ goversion }}')
+    when: not go_exists.stat.exists or go_version|changed
   - name: set GOPATH
     lineinfile: dest=/home/vagrant/.bash_profile state=present insertafter=EOF regexp='export GOPATH=' line='export GOPATH={{ gopath }}'
   - name: set PATH to Go bin
