@@ -63,7 +63,7 @@
     shell: sudo tar -C {{ goroot }} -xzf go{{ goversion }}.linux-amd64.tar.gz
     when: not go_exists.stat.exists or go_version|changed
   - name: set GOPATH
-    lineinfile: dest=/home/vagrant/.bash_profile state=present insertafter=EOF regexp='export GOPATH=' line='export GOPATH={{ gopath }}'
+    lineinfile: dest=/home/vagrant/.bash_profile state=present create=yes insertafter=EOF regexp='export GOPATH=' line='export GOPATH={{ gopath }}'
   - name: set PATH to Go bin
     lineinfile: dest=/home/vagrant/.bash_profile state=present insertafter=EOF regexp='{{ goroot }}/go/bin:' line='export PATH=$PATH:{{ goroot }}/go/bin:$GOPATH/bin'
   - name: check godep exists
