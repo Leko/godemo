@@ -73,4 +73,6 @@
     shell: go get github.com/kr/godep
     when: not godep.stat.exists
   - name: save go dependencies
-    shell: cd {{ apppath }} && go get && godep save
+    shell: cd {{ apppath }} && go get && godep save && git diff Godeps/Godeps.json
+    register: godep_diff
+    changed_when: "godep_diff.stdout != ''"
