@@ -30,8 +30,13 @@
       - { name: postgresql }
     sudo: yes
   - name: update postgres config for development
-    shell: sed -i -e 's/peer\|md5/trust/' /etc/postgresql/9.1/main/pg_hba.conf; service postgresql restart
+    replace: dest=/etc/postgresql/9.1/main/pg_hba.conf regexp='peer\|md5' replace='trust'
     sudo: yes
+    register: postgres_config
+  - name: restart postgresql
+    service: name=postgresql state=restarted
+    sudo: yes
+    when: postgres_config.changed
   - name: check synced folder owner is vagrant
     stat: path={{ gopath }}
     register: synced_folder
