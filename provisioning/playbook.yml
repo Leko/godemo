@@ -10,6 +10,7 @@
 - hosts: default
   sudo: false
   vars:
+    goversion: "1.4.1"
     goroot: "/usr/local"
     gopath: "/home/vagrant/go"
     apppath: "{{ gopath }}/src/godemo"
@@ -42,12 +43,17 @@
     shell: ls {{ goroot }}/go
     register: go_exists
     ignore_errors: yes
+  - name: check Go version
+    shell: go version | awk '{ print $3 }'
+    register: go_version_matched
+    ignore_errors: yes
+    when: go_exists|success
   - name: get a go
-    shell: wget https://storage.googleapis.com/golang/go1.4.1.linux-amd64.tar.gz
-    when: go_exists|failed
+    shell: wget https://storage.googleapis.com/golang/go{{ goversion }}.linux-amd64.tar.gz
+    when: go_exists|failed or go_version_matched.stdout.find('go{{ goversion }}')
   - name: extract files from an archive
-    shell: sudo tar -C {{ goroot }} -xzf go1.4.1.linux-amd64.tar.gz
-    when: go_exists|failed
+    shell: sudo tar -C {{ goroot }} -xzf go{{ goversion }}.linux-amd64.tar.gz
+    when: go_exists|failed or go_version_matched.stdout.find('go{{ goversion }}')
   - name: check GOPATH exists
     shell: grep 'GOPATH' $HOME/.bash_profile
     register: gopath_exists
