@@ -65,7 +65,11 @@
     lineinfile: dest=/home/vagrant/.bash_profile state=present insertafter=EOF regexp='export GOPATH=' line='export GOPATH={{ gopath }}'
   - name: set PATH to Go bin
     lineinfile: dest=/home/vagrant/.bash_profile state=present insertafter=EOF regexp='{{ goroot }}/go/bin:' line='export PATH=$PATH:{{ goroot }}/go/bin:$GOPATH/bin'
+  - name: check godep exists
+    stat: path={{ gopath }}/bin/godep
+    register: godep
   - name: get godep
     shell: go get github.com/kr/godep
+    when: not godep.stat.exists
   - name: save go dependencies
     shell: cd {{ apppath }} && go get && godep save
