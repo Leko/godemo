@@ -10,6 +10,7 @@
 - hosts: default
   sudo: false
   vars:
+    goversion: "1.5.1"
     goroot: "/usr/local"
     gopath: "/home/vagrant/go"
     apppath: "{{ gopath }}/src/godemo"
@@ -19,7 +20,10 @@
     PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin:{{ gopath }}/bin
   tasks:
   - name: update apt-get
-    shell: apt-get update
+    apt: update_cache=yes
+    sudo: yes
+  - name: upgrade apt-get
+    apt: upgrade=yes
     sudo: yes
   - name: install dependence packages
     apt: name={{ item.name }} state=installed
@@ -29,8 +33,13 @@
       - { name: postgresql }
     sudo: yes
   - name: update postgres config for development
-    shell: sed -i -e 's/peer\|md5/trust/' /etc/postgresql/9.1/main/pg_hba.conf; service postgresql restart
+    replace: dest=/etc/postgresql/9.1/main/pg_hba.conf regexp='peer\|md5' replace='trust'
     sudo: yes
+    register: postgres_config
+  - name: restart postgresql
+    service: name=postgresql state=restarted
+    sudo: yes
+    when: postgres_config.changed
   - name: check synced folder owner is vagrant
     stat: path={{ gopath }}
     register: synced_folder
@@ -39,26 +48,31 @@
     sudo: yes
     when: synced_folder.stat.pw_name != 'vagrant'
   - name: check Go exists
-    shell: ls {{ goroot }}/go
+    stat: path={{ goroot }}/go
     register: go_exists
+  - name: check Go version
+    shell: go version | awk '{ print $3 }'
+    register: go_version
     ignore_errors: yes
+    changed_when: "go_version.stdout.find('go{{ goversion }}')"
+    when: go_exists.stat.exists
   - name: get a go
-    shell: wget https://storage.googleapis.com/golang/go1.4.1.linux-amd64.tar.gz
-    when: go_exists|failed
+    shell: wget https://storage.googleapis.com/golang/go{{ goversion }}.linux-amd64.tar.gz
+    when: not go_exists.stat.exists or go_version|changed
   - name: extract files from an archive
-    shell: sudo tar -C {{ goroot }} -xzf go1.4.1.linux-amd64.tar.gz
-    when: go_exists|failed
-  - name: check GOPATH exists
-    shell: grep 'GOPATH' $HOME/.bash_profile
-    register: gopath_exists
-    ignore_errors: yes
+    shell: sudo tar -C {{ goroot }} -xzf go{{ goversion }}.linux-amd64.tar.gz
+    when: not go_exists.stat.exists or go_version|changed
   - name: set GOPATH
-    shell: echo "export GOPATH={{ gopath }}" >> $HOME/.bash_profile; . $HOME/.bash_profile
-    when: gopath_exists|failed
+    lineinfile: dest=/home/vagrant/.bash_profile state=present create=yes insertafter=EOF regexp='export GOPATH=' line='export GOPATH={{ gopath }}'
   - name: set PATH to Go bin
-    shell: echo 'export PATH=$PATH:{{ goroot }}/go/bin:$GOPATH/bin' >> $HOME/.bash_profile; . $HOME/.bash_profile
-    when: gopath_exists|failed
+    lineinfile: dest=/home/vagrant/.bash_profile state=present insertafter=EOF regexp='{{ goroot }}/go/bin:' line='export PATH=$PATH:{{ goroot }}/go/bin:$GOPATH/bin'
+  - name: check godep exists
+    stat: path={{ gopath }}/bin/godep
+    register: godep
   - name: get godep
     shell: go get github.com/kr/godep
+    when: not godep.stat.exists
   - name: save go dependencies
-    shell: cd {{ apppath }} && go get && godep save
+    shell: cd {{ apppath }} && go get && godep save && git diff Godeps/Godeps.json
+    register: godep_diff
+    changed_when: "godep_diff.stdout != ''"

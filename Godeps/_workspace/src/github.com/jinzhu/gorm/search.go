@@ -3,24 +3,25 @@ package gorm
 import "fmt"
 
 type search struct {
-	db              *DB
-	whereConditions []map[string]interface{}
-	orConditions    []map[string]interface{}
-	notConditions   []map[string]interface{}
-	havingCondition map[string]interface{}
-	initAttrs       []interface{}
-	assignAttrs     []interface{}
-	selects         map[string]interface{}
-	omits           []string
-	orders          []string
-	joins           string
-	preload         []searchPreload
-	offset          string
-	limit           string
-	group           string
-	tableName       string
-	raw             bool
-	Unscoped        bool
+	db               *DB
+	whereConditions  []map[string]interface{}
+	orConditions     []map[string]interface{}
+	notConditions    []map[string]interface{}
+	havingConditions []map[string]interface{}
+	initAttrs        []interface{}
+	assignAttrs      []interface{}
+	selects          map[string]interface{}
+	omits            []string
+	orders           []string
+	joins            string
+	preload          []searchPreload
+	offset           string
+	limit            string
+	group            string
+	tableName        string
+	raw              bool
+	Unscoped         bool
+	countingQuery    bool
 }
 
 type searchPreload struct {
@@ -60,8 +61,12 @@ func (s *search) Assign(attrs ...interface{}) *search {
 
 func (s *search) Order(value string, reorder ...bool) *search {
 	if len(reorder) > 0 && reorder[0] {
-		s.orders = []string{value}
-	} else {
+		if value != "" {
+			s.orders = []string{value}
+		} else {
+			s.orders = []string{}
+		}
+	} else if value != "" {
 		s.orders = append(s.orders, value)
 	}
 	return s
@@ -93,7 +98,7 @@ func (s *search) Group(query string) *search {
 }
 
 func (s *search) Having(query string, values ...interface{}) *search {
-	s.havingCondition = map[string]interface{}{"query": query, "args": values}
+	s.havingConditions = append(s.havingConditions, map[string]interface{}{"query": query, "args": values})
 	return s
 }
 
@@ -134,7 +139,7 @@ func (s *search) getInterfaceAsSql(value interface{}) (str string) {
 	case string, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
 		str = fmt.Sprintf("%v", value)
 	default:
-		s.db.err(InvalidSql)
+		s.db.AddError(InvalidSql)
 	}
 
 	if str == "-1" {

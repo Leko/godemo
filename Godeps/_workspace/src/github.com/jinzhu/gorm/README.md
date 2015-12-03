@@ -1,5 +1,7 @@
 # GORM
 
+[![Join the chat at https://gitter.im/jinzhu/gorm](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jinzhu/gorm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 The fantastic ORM library for Golang, aims to be developer friendly.
 
 [![wercker status](https://app.wercker.com/status/0cb7bb1039e21b74f8274941428e0921/s/master "wercker status")](https://app.wercker.com/project/bykey/0cb7bb1039e21b74f8274941428e0921)
@@ -27,6 +29,69 @@ The fantastic ORM library for Golang, aims to be developer friendly.
 ```
 go get -u github.com/jinzhu/gorm
 ```
+
+## Documentation 
+
+[![GoDoc](https://godoc.org/github.com/jinzhu/gorm?status.svg)](https://godoc.org/github.com/jinzhu/gorm)
+
+`go doc` format documentation for this project can be viewed online without
+installing the package by using the GoDoc page at:
+http://godoc.org/github.com/jinzhu/gorm
+
+## Table of Contents
+
+- [Define Models (Structs)](#define-models-structs)
+- [Conventions](#conventions)
+- [Initialize Database](#initialize-database)
+- [Migration](#migration)
+- [Basic CRUD](#basic-crud)
+  - [Create](#create-record)
+  - [Query](#query)
+      - [Query With Where (Plain SQL)](#query-with-where-plain-sql)
+      - [Query With Where (Struct & Map)](#query-with-where-struct--map)
+      - [Query With Not](#query-with-not)
+      - [Query With Inline Condition](#query-with-inline-condition)
+      - [Query With Or](#query-with-or)
+      - [Query Chains](#query-chains)
+      - [Preloading (Eager loading)](#preloading-eager-loading)
+  - [Update](#update)
+      - [Update Without Callbacks](#update-without-callbacks)
+      - [Batch Updates](#batch-updates)
+      - [Update with SQL Expression](#update-with-sql-expression)
+  - [Delete](#delete)
+      - [Batch Delete](#batch-delete)
+      - [Soft Delete](#soft-delete)
+- [Associations](#associations)
+    - [Has One](#has-one)
+    - [Belongs To](#belongs-to)
+    - [Has Many](#has-many)
+    - [Many To Many](#many-to-many)
+    - [Polymorphism](#polymorphism)
+- [Advanced Usage](#advanced-usage)
+	- [FirstOrInit](#firstorinit)
+	- [FirstOrCreate](#firstorcreate)
+	- [Select](#select)
+	- [Order](#order)
+	- [Limit](#limit)
+	- [Offset](#offset)
+	- [Count](#count)
+	- [Pluck](#pluck)
+	- [Raw SQL](#raw-sql)
+	- [Row & Rows](#row--rows)
+	- [Scan](#scan)
+	- [Group & Having](#group--having)
+	- [Joins](#joins)
+	- [Transactions](#transactions)
+	- [Scopes](#scopes)
+	- [Callbacks](#callbacks)
+	- [Specifying The Table Name](#specifying-the-table-name)
+	- [Error Handling](#error-handling)
+	- [Logger](#logger)
+	- [Existing Schema](#existing-schema)
+	- [Composite Primary Key](#composite-primary-key)
+	- [Database Indexes & Foreign Key](#database-indexes--foreign-key)
+	- [Default values](#default-values)
+	- [More examples with query chain](#more-examples-with-query-chain)
 
 ## Define Models (Structs)
 
@@ -136,12 +201,20 @@ db.SingularTable(true)
 ```go
 // Create table
 db.CreateTable(&User{})
+db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&User{})
 
 // Drop table
 db.DropTable(&User{})
 
+// ModifyColumn
+db.Model(&User{}).ModifyColumn("description", "text")
+
+// DropColumn
+db.Model(&User{}).DropColumn("description")
+
 // Automating Migration
 db.AutoMigrate(&User{})
+db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&User{})
 db.AutoMigrate(&User{}, &Product{}, &Order{})
 // Feel free to change your struct, AutoMigrate will keep your database up-to-date.
 // AutoMigrate will ONLY add *new columns* and *new indexes*,
@@ -1124,7 +1197,7 @@ type Product struct {
 // 2nd param : destination table(id)
 // 3rd param : ONDELETE
 // 4th param : ONUPDATE
-db.Model(&User{}).AddForeignKey("role_id", "roles", "CASCADE", "RESTRICT")
+db.Model(&User{}).AddForeignKey("city_id", "cities(id)", "RESTRICT", "RESTRICT")
 
 // Add index
 db.Model(&User{}).AddIndex("idx_user_name", "name")
@@ -1144,7 +1217,15 @@ db.Model(&User{}).RemoveIndex("idx_user_name")
 
 ## Default values
 
-If you have defined a default value in the `sql` tag (see the struct Animal above) the generated create/update SQl will ignore these fields if is set blank data.
+```go
+type Animal struct {
+	ID   int64
+	Name string `sql:"default:'galeone'"`
+	Age  int64
+}
+```
+
+If you have defined a default value in the `sql` tag, the generated create SQL will ignore these fields if it is blank.
 
 Eg.
 
@@ -1152,7 +1233,7 @@ Eg.
 db.Create(&Animal{Age: 99, Name: ""})
 ```
 
-The generated query will be:
+The generated SQL will be:
 
 ```sql
 INSERT INTO animals("age") values('99');
@@ -1200,12 +1281,7 @@ db.Where("email = ?", "x@example.org").Attrs(User{RegisteredIp: "111.111.111.111
 ```
 
 ## TODO
-* db.Select("Languages", "Name").Update(&user)
-  db.Omit("Languages").Update(&user)
-* Auto migrate indexes
 * Github Pages
-* AlertColumn, DropColumn
-* R/W Splitting, Validation
 
 # Author
 
@@ -1215,8 +1291,10 @@ db.Where("email = ?", "x@example.org").Attrs(User{RegisteredIp: "111.111.111.111
 * <wosmvp@gmail.com>
 * <http://twitter.com/zhangjinzhu>
 
+# Contributors
+
+https://github.com/jinzhu/gorm/graphs/contributors
+
 ## License
 
 Released under the [MIT License](https://github.com/jinzhu/gorm/blob/master/License).
-
-[![GoDoc](https://godoc.org/github.com/jinzhu/gorm?status.png)](http://godoc.org/github.com/jinzhu/gorm)
