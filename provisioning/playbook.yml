@@ -20,7 +20,7 @@
     PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin:{{ gopath }}/bin
   tasks:
   - name: update apt-get
-    shell: apt-get update
+    apt: update_cache=yes
     sudo: yes
   - name: install dependence packages
     apt: name={{ item.name }} state=installed
