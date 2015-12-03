@@ -10,7 +10,7 @@
 - hosts: default
   sudo: false
   vars:
-    goversion: "1.4.1"
+    goversion: "1.5.1"
     goroot: "/usr/local"
     gopath: "/home/vagrant/go"
     apppath: "{{ gopath }}/src/godemo"
