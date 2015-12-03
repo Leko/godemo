@@ -61,16 +61,10 @@
   - name: extract files from an archive
     shell: sudo tar -C {{ goroot }} -xzf go{{ goversion }}.linux-amd64.tar.gz
     when: not go_exists.stat.exists or go_version_matched.stdout.find('go{{ goversion }}')
-  - name: check GOPATH exists
-    shell: grep 'GOPATH' $HOME/.bash_profile
-    register: gopath_exists
-    ignore_errors: yes
   - name: set GOPATH
-    shell: echo "export GOPATH={{ gopath }}" >> $HOME/.bash_profile; . $HOME/.bash_profile
-    when: gopath_exists|failed
+    lineinfile: dest=/home/vagrant/.bash_profile state=present insertafter=EOF regexp='export GOPATH=' line='export GOPATH={{ gopath }}'
   - name: set PATH to Go bin
-    shell: echo 'export PATH=$PATH:{{ goroot }}/go/bin:$GOPATH/bin' >> $HOME/.bash_profile; . $HOME/.bash_profile
-    when: gopath_exists|failed
+    lineinfile: dest=/home/vagrant/.bash_profile state=present insertafter=EOF regexp='{{ goroot }}/go/bin:' line='export PATH=$PATH:{{ goroot }}/go/bin:$GOPATH/bin'
   - name: get godep
     shell: go get github.com/kr/godep
   - name: save go dependencies
