@@ -5,6 +5,7 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/lib/pq/hstore"
@@ -52,37 +53,59 @@ func (postgres) SqlTag(value reflect.Value, size int, autoIncrease bool) string 
 			return "hstore"
 		}
 	default:
-		if _, ok := value.Interface().([]byte); ok {
+		if isByteArrayOrSlice(value) {
 			return "bytea"
+		} else if isUUID(value) {
+			return "uuid"
 		}
 	}
 	panic(fmt.Sprintf("invalid sql type %s (%s) for postgres", value.Type().Name(), value.Kind().String()))
 }
 
-func (s postgres) ReturningStr(tableName, key string) string {
-	return fmt.Sprintf("RETURNING %v.%v", s.Quote(tableName), key)
+var byteType = reflect.TypeOf(uint8(0))
+
+func isByteArrayOrSlice(value reflect.Value) bool {
+	return (value.Kind() == reflect.Array || value.Kind() == reflect.Slice) && value.Type().Elem() == byteType
 }
 
-func (postgres) HasTable(scope *Scope, tableName string) bool {
+func isUUID(value reflect.Value) bool {
+	if value.Kind() != reflect.Array || value.Type().Len() != 16 {
+		return false
+	}
+	typename := value.Type().Name()
+	lower := strings.ToLower(typename)
+	return "uuid" == lower || "guid" == lower
+}
+
+func (s postgres) ReturningStr(tableName, key string) string {
+	return fmt.Sprintf("RETURNING %v.%v", tableName, key)
+}
+
+func (s postgres) HasTable(scope *Scope, tableName string) bool {
 	var count int
-	scope.NewDB().Raw("SELECT count(*) FROM INFORMATION_SCHEMA.tables WHERE table_name = ? AND table_type = 'BASE TABLE'", tableName).Row().Scan(&count)
+	s.RawScanInt(scope, &count, "SELECT count(*) FROM INFORMATION_SCHEMA.tables WHERE table_name = ? AND table_type = 'BASE TABLE'", tableName)
 	return count > 0
 }
 
-func (postgres) HasColumn(scope *Scope, tableName string, columnName string) bool {
+func (s postgres) HasColumn(scope *Scope, tableName string, columnName string) bool {
 	var count int
-	scope.NewDB().Raw("SELECT count(*) FROM INFORMATION_SCHEMA.columns WHERE table_name = ? AND column_name = ?", tableName, columnName).Row().Scan(&count)
+	s.RawScanInt(scope, &count, "SELECT count(*) FROM INFORMATION_SCHEMA.columns WHERE table_name = ? AND column_name = ?", tableName, columnName)
 	return count > 0
 }
 
 func (postgres) RemoveIndex(scope *Scope, indexName string) {
-	scope.NewDB().Exec(fmt.Sprintf("DROP INDEX %v", indexName))
+	scope.Err(scope.NewDB().Exec(fmt.Sprintf("DROP INDEX %v", indexName)).Error)
 }
 
-func (postgres) HasIndex(scope *Scope, tableName string, indexName string) bool {
+func (s postgres) HasIndex(scope *Scope, tableName string, indexName string) bool {
 	var count int
-	scope.NewDB().Raw("SELECT count(*) FROM pg_indexes WHERE tablename = ? AND indexname = ?", tableName, indexName).Row().Scan(&count)
+	s.RawScanInt(scope, &count, "SELECT count(*) FROM pg_indexes WHERE tablename = ? AND indexname = ?", tableName, indexName)
 	return count > 0
+}
+
+func (s postgres) CurrentDatabase(scope *Scope) (name string) {
+	s.RawScanString(scope, &name, "SELECT CURRENT_DATABASE()")
+	return
 }
 
 var hstoreType = reflect.TypeOf(Hstore{})

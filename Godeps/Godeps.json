@@ -1,50 +1,54 @@
 {
 	"ImportPath": "godemo",
-	"GoVersion": "go1.4.1",
+	"GoVersion": "go1.5.1",
 	"Deps": [
 		{
 			"ImportPath": "github.com/garyburd/redigo/internal",
-			"Rev": "a47585eaae68b1d14b02940d2af1b9194f3caa9c"
+			"Rev": "6ece6e0a09f28cc399b21550cbf37ab39ba63cce"
 		},
 		{
 			"ImportPath": "github.com/garyburd/redigo/redis",
-			"Rev": "a47585eaae68b1d14b02940d2af1b9194f3caa9c"
+			"Rev": "6ece6e0a09f28cc399b21550cbf37ab39ba63cce"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin",
-			"Comment": "v1.0rc1-136-gfd5d429",
-			"Rev": "fd5d4294a5d5223d55fc76d7840f4b0ad91647bb"
+			"Comment": "v1.0rc1-148-g52fcc5d",
+			"Rev": "52fcc5dbf6e94df33ad313858fb94b713e9d1b4a"
 		},
 		{
 			"ImportPath": "github.com/gorilla/context",
-			"Rev": "215affda49addc4c8ef7e2534915df2c8c35c6cd"
+			"Rev": "1c83b3eabd45b6d76072b66b746c20815fb2872d"
 		},
 		{
 			"ImportPath": "github.com/gorilla/securecookie",
-			"Rev": "aeade84400a85c6875264ae51c7a56ecdcb61751"
+			"Rev": "e95799a481bbcc3d01c2ad5178524cb8bec9f370"
 		},
 		{
 			"ImportPath": "github.com/gorilla/sessions",
-			"Rev": "f61c3ec2cf65d69e7efedfd4d060fe128882c951"
+			"Rev": "f7261893ca3ea922c30eabe742c036d2c1de6e0a"
 		},
 		{
 			"ImportPath": "github.com/jinzhu/gorm",
-			"Rev": "5663048f137b961f9b1bac6a10227096aa36b0bf"
+			"Rev": "84c6b46011b5b146782affd77dcf5ff95e255c50"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/inflection",
+			"Rev": "3272df6c21d04180007eb3349844c89a3856bc25"
 		},
 		{
 			"ImportPath": "github.com/joho/godotenv",
-			"Comment": "v1-8-g443e926",
-			"Rev": "443e926da0d793d3b3f32118b1e4ba52ada26503"
+			"Comment": "v1-10-g4ed1339",
+			"Rev": "4ed13390c0acd2ff4e371e64d8b97c8954138243"
 		},
 		{
 			"ImportPath": "github.com/justinas/nosurf",
-			"Comment": "0.1-50-g45adcfc",
-			"Rev": "45adcfcaf70610a5934db447ffe0ea9d13462c9e"
+			"Comment": "0.1-55-g49e8f43",
+			"Rev": "49e8f43d597476f31c84c07c262a3210a4f26ea6"
 		},
 		{
 			"ImportPath": "github.com/lib/pq",
-			"Comment": "go1.0-cutoff-56-gdc50b6a",
-			"Rev": "dc50b6ad2d3ee836442cf3389009c7cd1e64bb43"
+			"Comment": "go1.0-cutoff-63-g11fc39a",
+			"Rev": "11fc39a580a008f1f39bb3d11d984fb34ed778d9"
 		},
 		{
 			"ImportPath": "github.com/manucorporat/sse",
@@ -52,7 +56,7 @@
 		},
 		{
 			"ImportPath": "github.com/mattn/go-colorable",
-			"Rev": "40e4aedc8fabf8c23e040057540867186712faa5"
+			"Rev": "3dac7b4f76f6e17fb39b768b89e3783d16e237fe"
 		},
 		{
 			"ImportPath": "github.com/soveran/redisurl",
@@ -60,20 +64,20 @@
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/bcrypt",
-			"Rev": "7d5b0be716b9d6d4269afdaae10032bb296d3cdf"
+			"Rev": "7b85b097bf7527677d54d3220065e966a0e3b613"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/blowfish",
-			"Rev": "7d5b0be716b9d6d4269afdaae10032bb296d3cdf"
+			"Rev": "7b85b097bf7527677d54d3220065e966a0e3b613"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
-			"Rev": "f0cf018861e2b54077eced91659e255072b5f215"
+			"Rev": "d5cd7348bfebdf7dbb6dbb18fa488525f9024293"
 		},
 		{
 			"ImportPath": "gopkg.in/bluesuncorp/validator.v5",
-			"Comment": "v5.10.3",
-			"Rev": "77108103e5fd435ff31967e1a011fda801391c85"
+			"Comment": "v5.12",
+			"Rev": "d5acf1dac43705f8bfbb71d878e290e2bed3950b"
 		},
 		{
 			"ImportPath": "gopkg.in/boj/redistore.v1",

@@ -63,3 +63,8 @@ func (mysql) Quote(key string) string {
 func (mysql) SelectFromDummyTable() string {
 	return "FROM DUAL"
 }
+
+func (s mysql) CurrentDatabase(scope *Scope) (name string) {
+	s.RawScanString(scope, &name, "SELECT DATABASE()")
+	return
+}

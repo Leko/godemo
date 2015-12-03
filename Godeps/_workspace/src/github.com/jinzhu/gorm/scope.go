@@ -3,6 +3,7 @@ package gorm
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -87,6 +88,13 @@ func (scope *Scope) Quote(str string) string {
 	}
 }
 
+func (scope *Scope) QuoteIfPossible(str string) string {
+	if regexp.MustCompile("^[a-zA-Z]+(.[a-zA-Z]+)*$").MatchString(str) {
+		return scope.Quote(str)
+	}
+	return str
+}
+
 // Dialect get dialect
 func (scope *Scope) Dialect() Dialect {
 	return scope.db.parent.dialect
@@ -95,7 +103,7 @@ func (scope *Scope) Dialect() Dialect {
 // Err write error
 func (scope *Scope) Err(err error) error {
 	if err != nil {
-		scope.db.err(err)
+		scope.db.AddError(err)
 	}
 	return err
 }
@@ -197,13 +205,17 @@ func (scope *Scope) CallMethod(name string, checkError bool) {
 			case func(s *Scope):
 				f(scope)
 			case func(s *DB):
-				f(scope.NewDB())
+				newDB := scope.NewDB()
+				f(newDB)
+				scope.Err(newDB.Error)
 			case func() error:
 				scope.Err(f())
 			case func(s *Scope) error:
 				scope.Err(f(scope))
 			case func(s *DB) error:
-				scope.Err(f(scope.NewDB()))
+				newDB := scope.NewDB()
+				scope.Err(f(newDB))
+				scope.Err(newDB.Error)
 			default:
 				scope.Err(fmt.Errorf("unsupported function %v", name))
 			}
@@ -212,10 +224,18 @@ func (scope *Scope) CallMethod(name string, checkError bool) {
 
 	if values := scope.IndirectValue(); values.Kind() == reflect.Slice {
 		for i := 0; i < values.Len(); i++ {
-			call(values.Index(i).Addr().Interface())
+			value := values.Index(i).Addr().Interface()
+			if values.Index(i).Kind() == reflect.Ptr {
+				value = values.Index(i).Interface()
+			}
+			call(value)
 		}
 	} else {
-		call(scope.Value)
+		if scope.IndirectValue().CanAddr() {
+			call(scope.IndirectValue().Addr().Interface())
+		} else {
+			call(scope.IndirectValue().Interface())
+		}
 	}
 }
 
@@ -439,5 +459,5 @@ func (scope *Scope) shouldSaveAssociations() bool {
 	if ok && !saveAssociations.(bool) {
 		return false
 	}
-	return true
+	return true && !scope.HasError()
 }
