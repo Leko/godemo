@@ -22,6 +22,9 @@
   - name: update apt-get
     apt: update_cache=yes
     sudo: yes
+  - name: upgrade apt-get
+    apt: upgrade=yes
+    sudo: yes
   - name: install dependence packages
     apt: name={{ item.name }} state=installed
     with_items:
