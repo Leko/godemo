@@ -40,20 +40,19 @@
     sudo: yes
     when: synced_folder.stat.pw_name != 'vagrant'
   - name: check Go exists
-    shell: ls {{ goroot }}/go
+    stat: path={{ goroot }}/go
     register: go_exists
-    ignore_errors: yes
   - name: check Go version
     shell: go version | awk '{ print $3 }'
     register: go_version_matched
     ignore_errors: yes
-    when: go_exists|success
+    when: go_exists.stat.exists
   - name: get a go
     shell: wget https://storage.googleapis.com/golang/go{{ goversion }}.linux-amd64.tar.gz
-    when: go_exists|failed or go_version_matched.stdout.find('go{{ goversion }}')
+    when: not go_exists.stat.exists or go_version_matched.stdout.find('go{{ goversion }}')
   - name: extract files from an archive
     shell: sudo tar -C {{ goroot }} -xzf go{{ goversion }}.linux-amd64.tar.gz
-    when: go_exists|failed or go_version_matched.stdout.find('go{{ goversion }}')
+    when: not go_exists.stat.exists or go_version_matched.stdout.find('go{{ goversion }}')
   - name: check GOPATH exists
     shell: grep 'GOPATH' $HOME/.bash_profile
     register: gopath_exists
