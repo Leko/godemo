@@ -20,6 +20,12 @@ func (u *todos) List(c *gin.Context) {
 	user := c.MustGet("user").(model.User)
 
 	q := db.Where("user_id = ?", user.ID)
+	completed := c.DefaultQuery("completed", "")
+
+	if completed != "" {
+		q = q.Where("completed = ?", completed)
+	}
+
 	if err := q.Find(&todos).Error; err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 	} else {
