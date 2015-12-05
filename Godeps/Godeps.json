@@ -59,6 +59,10 @@
 			"Rev": "3dac7b4f76f6e17fb39b768b89e3783d16e237fe"
 		},
 		{
+			"ImportPath": "github.com/nu7hatch/gouuid",
+			"Rev": "179d4d0c4d8d407a32af483c2354df1d2c91e6c3"
+		},
+		{
 			"ImportPath": "github.com/soveran/redisurl",
 			"Rev": "ac42ec99510b5f21d11560d316adcc5bc41f0915"
 		},
