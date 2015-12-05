@@ -15,6 +15,7 @@ type User struct {
 	Password string `sql:"not null"`
 }
 
+// 生パスワードを与えるとハッシュ化したパスワードを返却する
 func PasswordHash(password string) string {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -24,6 +25,7 @@ func PasswordHash(password string) string {
 	return string(hashed)
 }
 
+// 保存前にメールアドレスを使用しAPIトークンとして生成してセットする
 func (u *User) BeforeSave() {
 	token, err := getUuid(u.Email)
 	if err != nil {
@@ -32,6 +34,7 @@ func (u *User) BeforeSave() {
 	u.Token = token
 }
 
+// ログイン可能なユーザか否かを判定する
 func (u *User) Auth() (int, error) {
 	email := u.Email
 	password := u.Password
