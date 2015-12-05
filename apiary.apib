@@ -1,0 +1,137 @@
+FORMAT: 1A
+HOST: https://godemo.herokuapp.com/api/
+
+# Go demo
+[Leko/godemo](https://github.com/Leko/godemo)リポジトリで作ったAPIドキュメントのデモです。  
+
+APIを利用するためには [デモ用サービス](https://go-demo.herokuapp.com/)へのログインが必要です。  
+ログインするとユーザごとに一意なAPIトークンが表示されているので、そちらを認証にご利用ください。  
+このトークンがあればすべてのAPIにアクセスできてしまうため、取り扱いにはご注意ください。
+
+## レスポンスとエラーハンドリング
+
+    {
+      "errors": [
+        "エラーがある場合、errorというキーにエラーメッセージの配列が入ります",
+        "エラーがない場合errorというキーは出現しません"
+      ],
+      "data": [{
+        "description": "dataというキーにレスポンスのデータが含まれます",
+        "caution": "キー名はdataで統一していますが、値は配列の場合もオブジェクトの場合も存在するのでご注意ください"
+      }]
+    }
+
+## 認証
+`X-GODEMO-TOKEN`ヘッダにAPIトークンをセットして送信してください。  
+
+    X-GODEMO-TOKEN: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+`X-GODEMO-TOKEN`がない場合、送信された`X-GODEMO-TOKEN`に対応するユーザが存在しない場合、BadRequestを返します
+
+# Todo API
+TODO管理のAPIを提供します。  
+
+## TODO [/api/todos]
+
+### List all todo [GET /api/todos{?completed}]
+自分のTodo一覧を取得します
+
++ Parameters
+    + completed: `1` (number, optional) - 指定した場合、その状態のTODOだけを取得します。1:完了、0:未完了
+
++ Attributes
+    + id: `1` (number) - TODOのID
+    + title: `buy something` (string) - TODOのタイトル
+    + completed: `0` (number) - TODOが完了されているか否かを表すフラグ。1:完了、0:未完了
+    + created_at: `2015-09-20T00:02:47.099322+09:00` (string) - TODOの作成日。●●●のフォーマットで返します
+    + completed_at: `null` (string) - TODOが完了された日時。作成日と同じく●●●のフォーマットで返します。TODOが未完了の場合この値はnullになります
+
++ Request
+    + Headers
+
+            X-GODEMO-TOKEN: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
++ Response 200 (application/json; charset=utf-8)
+
+        [
+          {
+            "id": 1,
+            "title": "buy something",
+            "completed": false,
+            "created_at": "2015-09-20T00:02:47.099322+09:00",
+            "completed_at": null
+          },
+          {
+            "id": 2,
+            "title": "buy something",
+            "completed": false,
+            "created_at": "2015-09-20T00:14:28.408199+09:00",
+            "completed_at": null
+          }
+        ]
+
+### Create new todo [POST]
+
+TODOを新規登録します。
+
++ Request (application/json)
+    + Attributes
+        + title (string, required) - TODOのタイトル
+
+    + Headers
+
+            X-GODEMO-TOKEN: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+    + Body
+
+            {
+              "title": "buy something"
+            }
+
++ Response 201 (application/json; charset=utf-8)
+
+        {
+          "id": 3,
+          "title": "buy something",
+          "completed": false,
+          "created_at": "2015-09-20T00:02:47.099322+09:00",
+          "completed_at": null
+        }
+
+
++ Request (application/json)
+    + Headers
+
+            X-GODEMO-TOKEN: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+    + Body
+
+            {}
+
++ Response 400 (application/json; charset=utf-8)
+
+        {
+          "errors": [
+            "title: required"
+          ]
+        }
+
+
++ Request (application/json)
+    + Headers
+
+            X-GODEMO-TOKEN: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+    + Body
+
+            {
+              "title": "some long long long long long long long long long title"
+            }
+
++ Response 400 (application/json; charset=utf-8)
+
+        {
+          "errors": [
+            "title: too_long"
+          ]
+        }
