@@ -9,8 +9,10 @@ import (
 
 type todos struct{}
 
+// TODO関連の処理を行うコントローラ
 var Todos todos = todos{}
 
+// TODO一覧を返却する
 func (u *todos) List(c *gin.Context) {
 	var todos []model.Todo
 
@@ -25,6 +27,7 @@ func (u *todos) List(c *gin.Context) {
 	}
 }
 
+// TODOを登録する
 func (u *todos) Create(c *gin.Context) {
 	var todo model.Todo
 
