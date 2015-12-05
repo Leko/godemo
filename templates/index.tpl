@@ -19,6 +19,9 @@
 		<dt>Password(Hashed)</dt>
 		<dd>{{.user.Password}}</dd>
 
+		<dt>API token</dt>
+		<dd>{{.user.Token}}</dd>
+
 		<dt>CreatedAt</dt>
 		<dd>{{.user.CreatedAt}}</dd>
 	</dl>

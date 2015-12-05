@@ -33,7 +33,7 @@
       - { name: postgresql }
     sudo: yes
   - name: update postgres config for development
-    replace: dest=/etc/postgresql/9.1/main/pg_hba.conf regexp='peer\|md5' replace='trust'
+    replace: dest=/etc/postgresql/9.1/main/pg_hba.conf regexp='peer|md5' replace='trust'
     sudo: yes
     register: postgres_config
   - name: restart postgresql
