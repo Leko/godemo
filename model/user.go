@@ -7,6 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// ユーザ情報を保持するモデル
 type User struct {
 	gorm.Model
 

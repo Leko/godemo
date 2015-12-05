@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// TODOを保持するモデル
 type Todo struct {
 	ID          uint       `gorm:"primary_key" sql:"not null" json:"id"`
 	UserID      uint       `sql:"not null;index" json:"-"`
