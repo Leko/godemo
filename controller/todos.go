@@ -23,7 +23,7 @@ func (u *todos) List(c *gin.Context) {
 	if err := q.Find(&todos).Error; err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 	} else {
-		c.JSON(http.StatusOK, todos)
+		c.JSON(http.StatusOK, gin.H{"todos": todos})
 	}
 }
 
