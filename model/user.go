@@ -27,7 +27,7 @@ func PasswordHash(password string) string {
 
 // 保存前にメールアドレスを使用しAPIトークンとして生成してセットする
 func (u *User) BeforeSave() {
-	token, err := getUuid(u.Email)
+	token, err := getUUID(u.Email)
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +49,7 @@ func (u *User) Auth() (int, error) {
 	return int(user.ID), err
 }
 
-func getUuid(signature string) (string, error) {
+func getUUID(signature string) (string, error) {
 	var uid string
 	u5, err := uuid.NewV5(uuid.NamespaceURL, []byte(signature))
 	if err == nil {
