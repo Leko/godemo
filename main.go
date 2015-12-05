@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/justinas/nosurf"
 	"godemo/controller"
 	"godemo/database"
 	"godemo/model"
@@ -40,26 +39,19 @@ func main() {
 	router.Static("/css", "./assets/dist/css")
 	router.LoadHTMLGlob("templates/*")
 
-	web := router.Group("", gin.WrapH(nosurf.NewPure(router)))
-	{
-		web.GET("/ping", func(c *gin.Context) {
-			c.String(http.StatusOK, "pong")
-		})
+	router.GET("/ping", func(c *gin.Context) {
+		c.String(http.StatusOK, "pong")
+	})
 
-		web.GET("/", controller.Users.Top)
-		web.GET("/login", controller.Users.Login)
-		web.GET("/logout", controller.Users.Logout)
-		web.GET("/register", controller.Users.Register)
-		web.POST("/authenticate", controller.Users.Authenticate)
-		web.POST("/users/create", controller.Users.Create)
-	}
+	router.GET("/", controller.Users.Top)
+	router.GET("/login", controller.Users.Login)
+	router.GET("/logout", controller.Users.Logout)
+	router.GET("/register", controller.Users.Register)
+	router.POST("/authenticate", controller.Users.Authenticate)
+	router.POST("/users/create", controller.Users.Create)
 
-	api := router.Group("/api")
-	api.Use(apiHandle())
-	{
-		api.GET("/todos", controller.Todos.List)
-		api.POST("/todos", controller.Todos.Create)
-	}
+	router.GET("/api/todos", apiHandle(), controller.Todos.List)
+	router.POST("/api/todos", apiHandle(), controller.Todos.Create)
 
 	http.ListenAndServe(":"+port(), router)
 }
