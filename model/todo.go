@@ -13,6 +13,7 @@ type Todo struct {
 	CreatedAt   time.Time  `sql:"not null" json:"created_at"`
 }
 
+// もしCompletedがfalseならCompletedAtを空にしてから保存する
 func (u *Todo) BeforeSave() {
 	if !u.Completed {
 		u.CompletedAt = nil
