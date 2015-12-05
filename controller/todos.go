@@ -10,7 +10,7 @@ import (
 type todos struct{}
 
 // TODO関連の処理を行うコントローラ
-var Todos todos = todos{}
+var Todos todos
 
 // TODO一覧を返却する
 func (u *todos) List(c *gin.Context) {
