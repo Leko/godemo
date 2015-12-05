@@ -2,11 +2,11 @@ package session
 
 import (
 	"github.com/gorilla/sessions"
+	"godemo/database"
+	"godemo/model"
 	. "gopkg.in/boj/redistore.v1"
 	"net/http"
 	"os"
-	"godemo/database"
-	"godemo/model"
 	"strconv"
 )
 
@@ -41,7 +41,7 @@ func GetSession(req *http.Request) *sessions.Session {
 func GetCurrentUser(req *http.Request) model.User {
 	var user model.User
 
-	id := GetSession(req).Values["user_id"]
+	id := GetSession(req).Values["userId"]
 
 	if id != nil {
 		db := database.GetDB()
