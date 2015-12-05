@@ -17,8 +17,8 @@ import (
 const defaultPort = "8080"
 
 var (
-	msgInvalidJson     = "Invalid JSON format"
-	msgInvalidJsonType = func(e *json.UnmarshalTypeError) string {
+	msgInvalidJSON     = "Invalid JSON format"
+	msgInvalidJSONType = func(e *json.UnmarshalTypeError) string {
 		return "Expected " + e.Value + " but given type is " + e.Type.String() + " in JSON"
 	}
 	msgValidationFailed = func(e *validator.FieldError) string {
@@ -83,14 +83,14 @@ func apiHandle() gin.HandlerFunc {
 			// 1. エラーの種類で判定
 			switch e.Err {
 			case io.EOF:
-				errs = append(errs, msgInvalidJson)
+				errs = append(errs, msgInvalidJSON)
 			default:
 				// 2. エラーの型で判定
 				switch e.Err.(type) {
 				case *json.SyntaxError:
-					errs = append(errs, msgInvalidJson)
+					errs = append(errs, msgInvalidJSON)
 				case *json.UnmarshalTypeError:
-					errs = append(errs, msgInvalidJsonType(e.Err.(*json.UnmarshalTypeError)))
+					errs = append(errs, msgInvalidJSONType(e.Err.(*json.UnmarshalTypeError)))
 				case *validator.StructErrors:
 					for _, fieldErr := range e.Err.(*validator.StructErrors).Flatten() {
 						errs = append(errs, msgValidationFailed(fieldErr))
